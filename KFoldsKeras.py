@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+import logging
 from keras.models import Sequential
 from keras.layers import Dense
 from keras.wrappers.scikit_learn import KerasClassifier
@@ -10,11 +11,10 @@ from sklearn.preprocessing import LabelEncoder
 from sklearn.pipeline import Pipeline
 from keras import optimizers
 
-PATH = './input/'
-TRAIN = 'prueba370.txt'
+VERBOSE = 1
 
-seed = 7
-np.random.seed(seed)
+PATH = './input/'
+TRAIN = 'flowers.csv'
 
 def getLineValue(path, line):
 	file = open(path, "r").readlines()
@@ -34,18 +34,24 @@ NFOLDS = 3
 MOMENTUM = 0.3
 LEARNING_RATE = 0.3
 EPOCHS = 30
-BATCH = 5
+BATCH = 10
 
-# df = np.genfromtxt(PATH + TRAIN, skip_header=3, dtype=None, delimiter=',', names=HEADERS, usemask=True)
-df = pd.read_csv(PATH + TRAIN, skiprows=3, names=HEADERS)
+# Set random seed to get the same results
+SEED = 1618033
+np.random.seed(SEED)
+
+logging.basicConfig(level= logging.DEBUG if VERBOSE == 1 else logging.ERROR);
+
+df = pd.read_csv(PATH + TRAIN, skiprows = 3, names = HEADERS)
 dataset = df.values
-X = dataset[:,0:NUM_ATTRIBUTES].astype(float)
-Y = dataset[:,NUM_ATTRIBUTES]
+X = dataset[:, 0:NUM_ATTRIBUTES].astype(float)
+Y = dataset[:, NUM_ATTRIBUTES]
 
 # Encoder to get dataset classes
 encoder = LabelEncoder()
 encoder.fit(Y)
-print(encoder.classes_)
+logging.info("Dataset classes:\n" + " ".join(encoder.classes_))
+
 # Get output indexes of the encoder class
 encoded_Y = encoder.transform(Y)
 # Use one hot vector to indicate the class
@@ -63,9 +69,9 @@ def main_model():
 	# relu
 	# tanh
 	# sigmoid
-	model.add(Dense(NUM_ATTRIBUTES*2, input_dim=NUM_ATTRIBUTES, activation='tanh'))
-	model.add(Dense(NUM_ATTRIBUTES, activation='relu'))
-	model.add(Dense(NUM_ATTRIBUTES, activation='tanh'))
+	model.add(Dense(NUM_ATTRIBUTES * 2, input_dim = NUM_ATTRIBUTES, activation = 'tanh'))
+	model.add(Dense(NUM_ATTRIBUTES, activation = 'relu'))
+	# model.add(Dense(NUM_ATTRIBUTES, activation = 'tanh'))
 
 	# softmax output layer. In range of 0 and 1 may be used as predicted probabilities.
 	model.add(Dense(NUM_CLASSES, activation='softmax'))
@@ -90,14 +96,14 @@ def main_model():
 	# adamax
 	# nadam
 	# tfoptimizer
-	sgd = optimizers.SGD(lr=LEARNING_RATE, decay=1e-6, momentum=MOMENTUM, nesterov=True)
-	model.compile(loss='categorical_crossentropy', optimizer=sgd, metrics=['accuracy'])
+	sgd = optimizers.SGD(lr = LEARNING_RATE, decay = 1e-6, momentum = MOMENTUM, nesterov = True)
+	model.compile(loss = 'categorical_crossentropy', optimizer = sgd, metrics = ['accuracy'])
 
 	return model
 
-estimator = KerasClassifier(build_fn=main_model, epochs=EPOCHS, batch_size=BATCH, verbose=1)
+estimator = KerasClassifier(build_fn = main_model, epochs = EPOCHS, batch_size = BATCH, verbose = VERBOSE)
 
-kfold = KFold(n_splits=NFOLDS, shuffle=True, random_state=seed)
+kfold = KFold(n_splits = NFOLDS, shuffle = True, random_state = SEED )
 
-results = cross_val_score(estimator, X, onehot_y, cv=kfold)
-print("Precision: %.2f%% (%.2f%%)" % (results.mean()*100, results.std()*100))
+results = cross_val_score(estimator, X, onehot_y, cv = kfold)
+print("\nPrecision: %.2f%% \nStd Deviation: %.2f%%" % (results.mean() * 100, results.std() * 100))
