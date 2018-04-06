@@ -22,15 +22,21 @@ attribute1, attribute2, ..., attribute n, class
 You can find datasets examples in /input.
 
 ## Usage
+
 `$ python KFoldsKeras.py`
 
-## Tunning
+## Tunning
+
 You can experiment by changing the following variables
 
 [NFOLDS](https://github.com/MrcRjs/Keras-Example/blob/master/KFoldsKeras.py#L34)
+
 [MOMENTUM](https://github.com/MrcRjs/Keras-Example/blob/master/KFoldsKeras.py#L35)
+
 [LEARNING_RATE](https://github.com/MrcRjs/Keras-Example/blob/master/KFoldsKeras.py#L36)
+
 [EPOCHS](https://github.com/MrcRjs/Keras-Example/blob/master/KFoldsKeras.py#L37)
+
 [BATCH](https://github.com/MrcRjs/Keras-Example/blob/master/KFoldsKeras.py#L38)
 
 You can also modify the [configurations](https://github.com/MrcRjs/Keras-Example/blob/master/KFoldsKeras.py#L65-L75) of the layers of the neural network, add more layers, activation functions, number of nodes, etc.
