@@ -30,6 +30,7 @@ NUM_ATTRIBUTES = getLineValue(PATH + TRAIN, 2)
 NUM_CLASSES = getLineValue(PATH + TRAIN, 3)
 HEADERS = getVarNames(NUM_ATTRIBUTES)
 HEADERS += ("Class",)
+
 NFOLDS = 3
 MOMENTUM = 0.3
 LEARNING_RATE = 0.3
@@ -71,7 +72,7 @@ def main_model():
 	# sigmoid
 	model.add(Dense(NUM_ATTRIBUTES * 2, input_dim = NUM_ATTRIBUTES, activation = 'tanh'))
 	model.add(Dense(NUM_ATTRIBUTES, activation = 'relu'))
-	# model.add(Dense(NUM_ATTRIBUTES, activation = 'tanh'))
+	# model.add(Dense(5, activation = 'tanh'))
 
 	# softmax output layer. In range of 0 and 1 may be used as predicted probabilities.
 	model.add(Dense(NUM_CLASSES, activation='softmax'))
